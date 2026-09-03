@@ -32,6 +32,7 @@ import {
   subscribeToCustomIndicatorMeasurements,
 } from '@/lib/customIndicatorData';
 import { MeasurementForm } from './MeasurementForm';
+import { EditIndicatorButton } from './EditIndicatorButton';
 import { toastSuccess, toastError } from '@/lib/toast-helpers';
 import { format } from 'date-fns';
 import { id as idLocale } from 'date-fns/locale/id';
@@ -118,6 +119,7 @@ export function CustomIndicatorDetail({ indicatorId, userId, userName, activeUni
             {indicator.status === 'active' && (
               <DeactivateButton indicatorId={indicator.id} userId={userId} busy={busy} onDone={load} />
             )}
+            <EditIndicatorButton indicator={indicator} userId={userId} onDone={load} />
             <Button size="sm" variant="outline" className="gap-1.5" disabled={busy} onClick={() => withBusy(async () => {
               const cloned = await cloneCustomIndicator(indicator.id, userId);
               toastSuccess(`Disalin sebagai ${cloned.indicator.code} (draft)`);
