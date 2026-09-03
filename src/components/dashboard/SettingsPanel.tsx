@@ -17,6 +17,7 @@ import {
   Volume2,
   VolumeX,
   Layout,
+  UserCog,
 } from 'lucide-react';
 import { useTheme } from 'next-themes';
 
@@ -34,6 +35,7 @@ import {
 import { Separator } from '@/components/ui/separator';
 import { Badge } from '@/components/ui/badge';
 import { UNIT_MAP } from '@/types';
+import { UserManagementPanel } from '@/components/dashboard/UserManagementPanel';
 
 /* ── Settings types ────────────────────────────────────────────── */
 interface AppSettings {
@@ -85,6 +87,10 @@ function saveSettings(settings: AppSettings) {
 export interface SettingsPanelProps {
   open: boolean;
   onClose: () => void;
+  /** Role dasar pengguna saat ini — section Manajemen Pengguna hanya tampil untuk 'admin'. */
+  role?: string | null;
+  /** UID pengguna saat ini — dipakai UserManagementPanel untuk mencegah admin mencabut role admin dari akun sendiri. */
+  currentUserId?: string;
 }
 
 /* ── Setting row component ─────────────────────────────────────── */
@@ -184,6 +190,8 @@ function ThemeCard({
 export function SettingsPanel({
   open,
   onClose,
+  role,
+  currentUserId,
 }: SettingsPanelProps) {
   const { theme, setTheme } = useTheme();
   const [settings, setSettings] = useState<AppSettings>(() => {
@@ -415,6 +423,13 @@ export function SettingsPanel({
                     </Select>
                   </SettingRow>
                 </SettingsSection>
+
+                {/* ── Manajemen Pengguna (Admin only) ─────────────── */}
+                {role === 'admin' && currentUserId && (
+                  <SettingsSection title="Manajemen Pengguna" icon={<UserCog className="size-3.5" />}>
+                    <UserManagementPanel currentUserId={currentUserId} />
+                  </SettingsSection>
+                )}
 
                 {/* ── Tentang (About) ─────────────────────────────── */}
                 <SettingsSection title="Tentang" icon={<Info className="size-3.5" />}>

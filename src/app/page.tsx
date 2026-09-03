@@ -1087,6 +1087,8 @@ function Dashboard() {
         <SettingsPanel
           open={settingsOpen}
           onClose={() => setSettingsOpen(false)}
+          role={role}
+          currentUserId={user?.uid}
         />
 
         {/* Quick Actions Widget */}
