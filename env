@@ -1,0 +1,7 @@
+# Supabase — project: INMKlinik (xcfrhslgeopknjqafylt)
+NEXT_PUBLIC_SUPABASE_URL=https://xcfrhslgeopknjqafylt.supabase.co
+NEXT_PUBLIC_SUPABASE_ANON_KEY=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InhjZnJoc2xnZW9wa25qcWFmeWx0Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODg0MzE2MDIsImV4cCI6MjEwNDAwNzYwMn0.REL-tl3ZKrtXTyCfGZIbc8cHeu3w9VBIEBxA-8tDYZQ
+
+# Belum tersedia — WAJIB diisi sebelum fitur admin (src/lib/supabase/admin.ts) berfungsi.
+# Ambil dari: Supabase Dashboard > Project Settings > API > service_role secret key
+SUPABASE_SERVICE_ROLE_KEY=
