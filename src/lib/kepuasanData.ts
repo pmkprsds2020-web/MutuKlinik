@@ -447,15 +447,16 @@ export function computeKepuasanFromResponses(
 }
 
 export async function getKepuasanPeriodResult(surveyId: string, unitId: string | null = null): Promise<KepuasanPeriodResult | null> {
-  let query = supabase.from(PERIOD_RESULTS_TABLE).select('*').eq('survey_id', surveyId);
-  query = unitId === null ? query.is('unit_id', null) : query.eq('unit_id', unitId);
+  // unitId null (JS-level "ringkasan gabungan") disimpan sebagai sentinel 'all' di DB —
+  // lihat catatan di recomputeKepuasanPeriodResult di atas.
+  const query = supabase.from(PERIOD_RESULTS_TABLE).select('*').eq('survey_id', surveyId).eq('unit_id', unitId ?? 'all');
   const { data, error } = await query.maybeSingle();
   if (error) throw error;
   return data ? rowToPeriodResult(data) : null;
 }
 
 export async function getKepuasanUnitBreakdown(surveyId: string): Promise<KepuasanPeriodResult[]> {
-  const { data, error } = await supabase.from(PERIOD_RESULTS_TABLE).select('*').eq('survey_id', surveyId).not('unit_id', 'is', null);
+  const { data, error } = await supabase.from(PERIOD_RESULTS_TABLE).select('*').eq('survey_id', surveyId).neq('unit_id', 'all');
   if (error) throw error;
   return (data as any[]).map(rowToPeriodResult);
 }
@@ -478,7 +479,7 @@ export async function recomputeKepuasanPeriodResult(surveyId: string, actorId?: 
   await supabase.from(PERIOD_RESULTS_TABLE).upsert(
     {
       survey_id: surveyId,
-      unit_id: null,
+      unit_id: 'all', // sentinel utk baris ringkasan gabungan — BUKAN null, karena unique(survey_id, unit_id) tidak men-dedupe NULL di Postgres (lihat migration_kepuasan_fix_duplicates.sql)
       total_respondents: overall.totalRespondents,
       unsur_averages: overall.unsurAverages,
       nilai_indeks: overall.nilaiIndeks,
