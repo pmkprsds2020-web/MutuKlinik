@@ -32,7 +32,7 @@ import {
   subscribeToCustomIndicatorMeasurements,
 } from '@/lib/customIndicatorData';
 import { MeasurementForm } from './MeasurementForm';
-import { EditIndicatorButton } from './EditIndicatorButton';
+import { EditIndicatorButton, DeleteIndicatorButton } from './EditIndicatorButton';
 import { toastSuccess, toastError } from '@/lib/toast-helpers';
 import { format } from 'date-fns';
 import { id as idLocale } from 'date-fns/locale/id';
@@ -124,6 +124,7 @@ export function CustomIndicatorDetail({ indicatorId, userId, userName, activeUni
               const cloned = await cloneCustomIndicator(indicator.id, userId);
               toastSuccess(`Disalin sebagai ${cloned.indicator.code} (draft)`);
             })}><Copy className="size-3.5" /> Duplikasi</Button>
+            <DeleteIndicatorButton indicator={indicator} userId={userId} onDeleted={onBack} />
           </div>
         )}
       </div>

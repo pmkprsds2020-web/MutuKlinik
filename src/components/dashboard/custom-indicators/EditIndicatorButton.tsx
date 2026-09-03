@@ -9,9 +9,9 @@ import { Switch } from '@/components/ui/switch';
 import {
   Select, SelectContent, SelectItem, SelectTrigger, SelectValue,
 } from '@/components/ui/select';
-import { Loader2, Pencil, Save, X } from 'lucide-react';
+import { Loader2, Pencil, Save, X, Trash2 } from 'lucide-react';
 import { DEFAULT_CATEGORIES, type CustomIndicator } from '@/types/customIndicators';
-import { updateCustomIndicatorIdentity, getCustomIndicatorCategories, createCustomIndicatorCategory } from '@/lib/customIndicatorData';
+import { updateCustomIndicatorIdentity, getCustomIndicatorCategories, createCustomIndicatorCategory, deleteCustomIndicator } from '@/lib/customIndicatorData';
 import { toastSuccess, toastError } from '@/lib/toast-helpers';
 
 /** Field identitas indikator yang aman diedit langsung (tidak memengaruhi
@@ -43,7 +43,8 @@ export function EditIndicatorButton({
     setOpen(true);
     try {
       const cats = await getCustomIndicatorCategories();
-      if (cats.length > 0) setCategories(Array.from(new Set([...(DEFAULT_CATEGORIES as unknown as string[]), ...cats])));
+      const names = cats.map((c) => c.name);
+      if (names.length > 0) setCategories(Array.from(new Set([...(DEFAULT_CATEGORIES as unknown as string[]), ...names])));
     } catch { /* pakai DEFAULT_CATEGORIES saja bila gagal memuat */ }
   };
 
@@ -163,6 +164,60 @@ export function EditIndicatorButton({
         <Button size="sm" variant="outline" onClick={() => setOpen(false)}>Batal</Button>
         <Button size="sm" disabled={saving} onClick={save} className="gap-1.5">
           {saving ? <Loader2 className="size-4 animate-spin" /> : <Save className="size-3.5" />} Simpan Perubahan
+        </Button>
+      </div>
+    </div>
+  );
+}
+
+/** Hapus permanen. Database menolak (lewat FK on-delete-restrict di
+ *  custom_indicator_measurements) bila indikator ini sudah punya data
+ *  pengukuran — jadi risiko kehilangan histori tanpa sengaja tetap dijaga
+ *  di level database, bukan cuma di UI. */
+export function DeleteIndicatorButton({
+  indicator, userId, onDeleted,
+}: {
+  indicator: CustomIndicator; userId: string; onDeleted: () => void;
+}) {
+  const [open, setOpen] = useState(false);
+  const [confirmText, setConfirmText] = useState('');
+  const [deleting, setDeleting] = useState(false);
+
+  if (!open) {
+    return (
+      <Button size="sm" variant="outline" className="gap-1.5 text-destructive hover:text-destructive" onClick={() => setOpen(true)}>
+        <Trash2 className="size-3.5" /> Hapus
+      </Button>
+    );
+  }
+
+  return (
+    <div className="w-full rounded-lg border border-destructive/40 p-4 space-y-2 bg-card">
+      <p className="text-sm font-medium">Hapus indikator &quot;{indicator.name}&quot; secara permanen?</p>
+      <p className="text-xs text-muted-foreground">
+        Tindakan ini tidak bisa dibatalkan. Kalau indikator ini sudah pernah diisi data pengukuran,
+        penghapusan akan ditolak sistem — pakai &quot;Nonaktifkan&quot; sebagai gantinya untuk kasus itu.
+        Hapus permanen cocok untuk indikator draft/salah buat yang belum ada datanya.
+      </p>
+      <p className="text-xs">Ketik <span className="font-mono font-semibold">{indicator.code}</span> untuk konfirmasi:</p>
+      <Input value={confirmText} onChange={(e) => setConfirmText(e.target.value)} placeholder={indicator.code} className="h-9" />
+      <div className="flex gap-2 pt-1">
+        <Button size="sm" variant="outline" onClick={() => { setOpen(false); setConfirmText(''); }}>Batal</Button>
+        <Button
+          size="sm" variant="destructive" disabled={confirmText !== indicator.code || deleting}
+          onClick={async () => {
+            setDeleting(true);
+            try {
+              await deleteCustomIndicator(indicator.id, indicator.code, userId);
+              toastSuccess('Indikator dihapus permanen');
+              onDeleted();
+            } catch (err) {
+              toastError('Gagal menghapus', { description: err instanceof Error ? err.message : undefined });
+              setDeleting(false);
+            }
+          }}
+        >
+          {deleting ? <Loader2 className="size-4 animate-spin" /> : <Trash2 className="size-3.5" />} Hapus Permanen
         </Button>
       </div>
     </div>

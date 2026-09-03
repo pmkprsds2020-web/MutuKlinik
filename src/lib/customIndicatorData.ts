@@ -307,6 +307,27 @@ export async function updateCustomIndicatorIdentity(id: string, patch: Partial<C
   return updated;
 }
 
+/**
+ * Hapus permanen. Sengaja TIDAK bisa dipaksa dari sini bila indikator sudah
+ * punya data pengukuran — tabel custom_indicator_measurements dibuat dengan
+ * `on delete restrict` (lihat migration_custom_indicators.sql) supaya
+ * histori capaian tidak pernah hilang tanpa sengaja lewat jalur ini.
+ * Postgres akan menolak (23503) dan pesan di bawah mengarahkan ke
+ * "Nonaktifkan" sebagai alternatif yang aman. Versi, field, dan penetapan
+ * unit ikut terhapus otomatis (on delete cascade) karena memang tidak
+ * berarti apa-apa tanpa indikatornya.
+ */
+export async function deleteCustomIndicator(id: string, indicatorCode: string, actorId?: string): Promise<void> {
+  const { error } = await supabase.from(INDICATORS_TABLE).delete().eq('id', id);
+  if (error) {
+    if (error.code === '23503') {
+      throw new Error('Indikator ini sudah punya data pengukuran, jadi tidak bisa dihapus permanen (supaya histori tidak hilang). Gunakan "Nonaktifkan" sebagai gantinya.');
+    }
+    throw error;
+  }
+  await logCustomIndicatorAudit({ msg: `Indikator ${indicatorCode} dihapus permanen`, badge: 'DELETE_INDICATOR', userId: actorId, entityId: id });
+}
+
 export async function getCustomIndicatorBundle(id: string): Promise<CustomIndicatorBundle | null> {
   const indicator = await getCustomIndicatorById(id);
   if (!indicator) return null;
