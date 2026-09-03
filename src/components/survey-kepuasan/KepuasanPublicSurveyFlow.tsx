@@ -14,11 +14,11 @@ import {
   KEPUASAN_UNSUR_FIELDS, KEPUASAN_UNSUR_QUESTION, KEPUASAN_SCALE_LABEL,
   type KepuasanUnsurField, type KepuasanPublicSurveyInfo,
 } from '@/types/kepuasan';
-import { UNIT_MAP } from '@/types';
+import { UNIT_MAP, ACTIVE_UNIT_KEYS } from '@/types';
 
 // Daftar unit untuk pilihan pasien ketika survei berlaku untuk "Semua Unit"
 // — memakai daftar UnitId yang sudah ada di aplikasi (reuse, bukan master baru).
-const UNIT_OPTIONS = Object.keys(UNIT_MAP).filter((k) => k !== 'all');
+const UNIT_OPTIONS = ACTIVE_UNIT_KEYS;
 
 type Step = 'loading' | 'not_found' | 'intro' | number | 'review' | 'submitting' | 'done' | 'error';
 

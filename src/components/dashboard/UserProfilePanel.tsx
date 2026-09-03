@@ -17,7 +17,7 @@ import {
 import { toast } from 'sonner';
 import { supabase } from '@/lib/supabase/client';
 import { useAuth } from '@/contexts/AuthContext';
-import { UNIT_MAP } from '@/types';
+import { UNIT_MAP, ACTIVE_UNIT_KEYS } from '@/types';
 
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -85,7 +85,7 @@ function getFirebaseErrorMessage(message: string): string {
 }
 
 /* ── Unit entries (filter out 'all') ──────────────────────────── */
-const unitEntries = Object.entries(UNIT_MAP).filter(([key]) => key !== 'all');
+const unitEntries = Object.entries(UNIT_MAP).filter(([key]) => ACTIVE_UNIT_KEYS.includes(key));
 
 /* ── Component ────────────────────────────────────────────────── */
 export function UserProfilePanel({ open, onClose }: UserProfilePanelProps) {

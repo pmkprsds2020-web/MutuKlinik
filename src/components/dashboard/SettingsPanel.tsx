@@ -34,7 +34,7 @@ import {
 } from '@/components/ui/select';
 import { Separator } from '@/components/ui/separator';
 import { Badge } from '@/components/ui/badge';
-import { UNIT_MAP } from '@/types';
+import { UNIT_MAP, ACTIVE_UNIT_KEYS } from '@/types';
 import { UserManagementPanel } from '@/components/dashboard/UserManagementPanel';
 
 /* ── Settings types ────────────────────────────────────────────── */
@@ -319,7 +319,7 @@ export function SettingsPanel({
                       <SelectContent className="bg-popover border-border">
                         <SelectItem value="all" className="text-xs">Semua Unit</SelectItem>
                         {Object.entries(UNIT_MAP)
-                          .filter(([k]) => k !== 'all')
+                          .filter(([k]) => ACTIVE_UNIT_KEYS.includes(k))
                           .map(([key, meta]) => (
                             <SelectItem key={key} value={key} className="text-xs">
                               {meta.label}

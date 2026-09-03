@@ -12,9 +12,9 @@ import { createKepuasanSurvey } from '@/lib/kepuasanData';
 import { getCustomIndicators } from '@/lib/customIndicatorData';
 import type { KepuasanSurveyMode, KepuasanTargetOperator } from '@/types/kepuasan';
 import type { CustomIndicator } from '@/types/customIndicators';
-import { UNIT_MAP } from '@/types';
+import { UNIT_MAP, ACTIVE_UNIT_KEYS } from '@/types';
 
-const UNIT_OPTIONS = Object.keys(UNIT_MAP).filter((k) => k !== 'all');
+const UNIT_OPTIONS = ACTIVE_UNIT_KEYS;
 
 export function KepuasanSurveyForm({ userId, onDone, onCancel }: { userId: string; onDone: (id: string) => void; onCancel: () => void }) {
   const [name, setName] = useState('');

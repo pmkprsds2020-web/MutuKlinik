@@ -49,6 +49,7 @@ import {
   UNIT_MAP,
   INDICATORS,
   ACCESS_RULES,
+  ACTIVE_UNIT_KEYS,
 } from '@/types';
 import {
   createEntry,
@@ -913,7 +914,7 @@ function Dashboard() {
           onProfileClick={() => setProfileOpen(true)}
           userName={user?.displayName || user?.email || 'Pengguna'}
           onUnitChange={(unit) => setActiveUnit(unit)}
-          availableUnits={Object.keys(UNIT_MAP).filter((k) => k !== 'all')}
+          availableUnits={ACTIVE_UNIT_KEYS}
           unreadNotificationCount={auditLogs.filter(log => {
             // Count logs from the last hour as "recent unread"
             try {
